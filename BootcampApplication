@@ -1,0 +1,58 @@
+package org.example;
+import org.example.domain.entity.Candidato;
+import org.example.domain.repository.Candidatos;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.util.List;
+
+@SpringBootApplication
+public class BootcampApplication {
+    private String args;
+
+    @Bean
+    public CommandLineRunner init(@Autowired Candidatos candidatos) {
+        return args -> {
+            System.out.println("Create Candidatos");
+            candidatos.save(new Candidato("Everton"));
+            candidatos.save(new Candidato("No Bootcamp so tem fera!"));
+
+            List<Candidato> result = candidatos.findAll();
+            result.forEach(System.out::println);
+
+            List<Candidato> todosCandidatos = candidatos.findAll();
+            todosCandidatos.forEach(System.out::println);
+
+            System.out.println("Update nos Candidatos");
+            todosCandidatos.forEach(c -> {
+                c.setNome(c.getNome() + " atualizado.");
+                candidatos.save(c);
+            });
+
+            todosCandidatos = candidatos.findAll();
+            todosCandidatos.forEach(System.out::println);
+
+            System.out.println("Buscando candidatos");
+            candidatos.findByNomeLike("Zup").forEach(System.out::println);
+
+            System.out.println("deletando candidatos");
+            candidatos.findAll().forEach(c -> {
+                candidatos.delete(c);
+            });
+            todosCandidatos = candidatos.findAll();
+            if(todosCandidatos.isEmpty()){
+                System.out.println("Nenhum candidato encontrado.");
+            }else{
+                todosCandidatos.forEach(System.out::println);
+            }
+
+        };
+    }
+    public static void main(String[] args) {
+        SpringApplication.run(BootcampApplication.class, args);
+
+        }
+    }
